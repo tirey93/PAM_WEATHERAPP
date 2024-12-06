@@ -9,9 +9,9 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="68dp"
-        android:text="Fragment Bottom"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="44dp"
+        android:text="Fragment Middle Land"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
