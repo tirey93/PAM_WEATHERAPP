@@ -12,6 +12,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.pam_weatherapp.R;
+import com.example.pam_weatherapp.model.ForecastResponse;
+import com.example.pam_weatherapp.model.Person;
+import com.example.pam_weatherapp.model.WeatherResponse;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +34,7 @@ public class FragmentTop extends Fragment {
         Button button= view.findViewById(R.id.button2);
         if(button != null){
             button.setOnClickListener(v ->{
-                String urlString = "https://api.openweathermap.org/data/2.5/weather?appid=ad6d56e3ad097ef279175e9fadb7c7df&units=metric&q=piotrkow%20trybunalski";
+                String urlString = "https://api.openweathermap.org/data/2.5/forecast?id=524901&appid=ad6d56e3ad097ef279175e9fadb7c7df";
                 try {
                     URL url = new URL(urlString);
                     URLConnection conn = null;
@@ -39,13 +43,18 @@ public class FragmentTop extends Fragment {
 
                     Scanner s = new Scanner(is).useDelimiter("\\A");
                     String result = s.hasNext() ? s.next() : "";
+
+                    Gson gson = new Gson();
+                    ForecastResponse weatherResponse = gson.fromJson(result, ForecastResponse.class);
+
+
+
                     int a = 5;
-                } catch (IOException e) {
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             });
         }
-
 
         return view;
     }
