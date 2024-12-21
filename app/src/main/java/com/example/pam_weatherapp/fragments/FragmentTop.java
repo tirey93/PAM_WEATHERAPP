@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,14 @@ public class FragmentTop extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_top, container, false);
+
+        Button button= view.findViewById(R.id.button2);
+        if(button != null){
+            button.setOnClickListener(v ->{
+                int a = 5;
+            });
+        }
+
 
         return view;
     }
