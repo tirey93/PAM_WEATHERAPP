@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import com.example.pam_weatherapp.model.WeatherResponse;
 import com.example.pam_weatherapp.service.CacheService;
 import com.example.pam_weatherapp.service.ForecastService;
 import com.example.pam_weatherapp.service.WeatherService;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -57,6 +59,11 @@ public class FragmentTop extends Fragment {
 
     public void update(){update(null);}
     public void update(Config config) {
+        updateFav(config);
+        updateData(config);
+    }
+
+    private void updateData(Config config) {
         TextView resultTextView = view.findViewById(R.id.resultTextView);
         try {
             CompletableFuture.supplyAsync(() -> weatherService.getWeather(config), Executors.newSingleThreadExecutor())
@@ -70,6 +77,15 @@ public class FragmentTop extends Fragment {
 
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void updateFav(Config config) {
+        MaterialSwitch fav = view.findViewById(R.id.fav);
+        if(config == null){
+            fav.setChecked(false);
+        }else {
+            fav.setChecked(config.isFav());
         }
     }
 }

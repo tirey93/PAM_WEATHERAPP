@@ -30,4 +30,8 @@ public class Config {
         }
         return units.get(index);
     }
+
+    public boolean isFav(){
+        return favouriteCities.contains(currentCity);
+    }
 }
