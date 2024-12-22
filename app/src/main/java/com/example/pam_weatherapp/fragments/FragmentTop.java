@@ -50,24 +50,19 @@ public class FragmentTop extends Fragment {
         View view = inflater.inflate(R.layout.fragment_top, container, false);
 
         TextView resultTextView = view.findViewById(R.id.resultTextView);
-        Button button= view.findViewById(R.id.button2);
-        if(button != null){
-            button.setOnClickListener(v ->{
-                try {
-                    CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
-                        .whenComplete((weatherResponse, throwable) -> {
-                            if (throwable != null) {
-                                resultTextView.setText("Error fetching data: " + throwable.getMessage());
-                            } else if (weatherResponse != null) {
-                                resultTextView.post(()-> resultTextView.setText("City:" + weatherResponse.name + " temp: " + weatherResponse.main.temp));
-                            }
-                        });
+        try {
+            CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
+                .whenComplete((weatherResponse, throwable) -> {
+                    if (throwable != null) {
+                        resultTextView.setText("Error fetching data: " + throwable.getMessage());
+                    } else if (weatherResponse != null) {
+                        resultTextView.post(()-> resultTextView.setText("City:" + weatherResponse.name + " temp: " + weatherResponse.main.temp));
+                    }
+                });
 
-                    int a = 5;
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            int a = 5;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return view;
     }
