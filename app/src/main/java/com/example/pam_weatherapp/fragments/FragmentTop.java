@@ -50,8 +50,8 @@ public class FragmentTop extends Fragment {
         if(button != null){
             button.setOnClickListener(v ->{
                 try {
-                    WeatherResponse w = weatherService.getWeather(config);
-                    ForecastResponse f = forecastService.getForecast(config);
+                    WeatherResponse w = weatherService.getWeather();
+                    ForecastResponse f = forecastService.getForecast();
 
                     int a = 5;
                 } catch (Exception e) {
