@@ -28,9 +28,9 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private final CacheService cacheService;
-    private FragmentTop fragmentTop = new FragmentTop();
-    private FragmentMiddle fragmentMiddle = new FragmentMiddle();
-    private FragmentBottom fragmentBottom = new FragmentBottom();
+    private final FragmentTop fragmentTop = new FragmentTop();
+    private final FragmentMiddle fragmentMiddle = new FragmentMiddle();
+    private final FragmentBottom fragmentBottom = new FragmentBottom();
 
     public MainActivity() {
         cacheService = CacheService.getInstance();
@@ -69,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
             fragmentTop.update(config);
             return true;
         } else if ( groupId == R.id.searching){
+
+
+
+
             return true;
         } else if ( groupId == R.id.units){
             Config config = cacheService.loadConfig();
