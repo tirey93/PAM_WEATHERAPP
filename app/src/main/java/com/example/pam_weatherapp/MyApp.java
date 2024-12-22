@@ -5,6 +5,7 @@ import android.content.Context;
 
 public class MyApp extends Application {
     private static MyApp instance;
+    public static String appId = "ad6d56e3ad097ef279175e9fadb7c7df";
 
     public static MyApp getInstance() {
         return instance;

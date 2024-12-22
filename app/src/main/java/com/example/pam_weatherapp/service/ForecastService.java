@@ -1,5 +1,7 @@
 package com.example.pam_weatherapp.service;
 
+import com.example.pam_weatherapp.MyApp;
+import com.example.pam_weatherapp.model.Config;
 import com.example.pam_weatherapp.model.ForecastResponse;
 import com.example.pam_weatherapp.model.WeatherResponse;
 import com.google.gson.Gson;
@@ -10,21 +12,31 @@ import java.net.URLConnection;
 import java.util.Scanner;
 
 public class ForecastService {
-    private static ForecastService instance = null;
+    private static CacheService cacheService;
 
+    private static ForecastService instance = null;
     private ForecastService() {}
 
     public static ForecastService getInstance() {
         if (instance == null) {
             synchronized(ForecastService.class) {
                 instance = new ForecastService();
+                cacheService = CacheService.getInstance();
             }
         }
         return instance;
     }
 
-    public ForecastResponse getForecast() {
-        String urlString = "https://api.openweathermap.org/data/2.5/forecast?id=524901&appid=ad6d56e3ad097ef279175e9fadb7c7df";
+    public ForecastResponse getForecast(){return  getForecast(null);}
+    public ForecastResponse getForecast(Config config) {
+        if(config == null){
+            config = cacheService.loadConfig();
+        }
+        else {
+            cacheService.saveConfig(config);
+        }
+
+        String urlString = "https://api.openweathermap.org/data/2.5/forecast?appid=" + MyApp.appId +"&units=" + config.currentUnit +"&q=" + config.currentCity;;
         try {
             URL url = new URL(urlString);
             URLConnection conn = null;
