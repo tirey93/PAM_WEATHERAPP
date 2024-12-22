@@ -38,6 +38,8 @@ public class FragmentTop extends Fragment {
     private final ForecastService forecastService;
     private final CacheService cacheService;
 
+    private View view = null;
+
     public FragmentTop() {
         weatherService = WeatherService.getInstance();
         forecastService = ForecastService.getInstance();
@@ -47,11 +49,17 @@ public class FragmentTop extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_top, container, false);
+        view = inflater.inflate(R.layout.fragment_top, container, false);
 
+        update();
+        return view;
+    }
+
+    public void update(){update(null);}
+    public void update(Config config) {
         TextView resultTextView = view.findViewById(R.id.resultTextView);
         try {
-            CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
+            CompletableFuture.supplyAsync(() -> weatherService.getWeather(config), Executors.newSingleThreadExecutor())
                 .whenComplete((weatherResponse, throwable) -> {
                     if (throwable != null) {
                         resultTextView.setText("Error fetching data: " + throwable.getMessage());
@@ -60,10 +68,8 @@ public class FragmentTop extends Fragment {
                     }
                 });
 
-            int a = 5;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return view;
     }
 }

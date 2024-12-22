@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.MenuCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
@@ -18,25 +19,67 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.pam_weatherapp.fragments.FragmentBottom;
 import com.example.pam_weatherapp.fragments.FragmentMiddle;
 import com.example.pam_weatherapp.fragments.FragmentTop;
+import com.example.pam_weatherapp.model.Config;
+import com.example.pam_weatherapp.model.WeatherResponse;
+import com.example.pam_weatherapp.service.CacheService;
+import com.example.pam_weatherapp.service.WeatherService;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+    private final CacheService cacheService;
+    private FragmentTop fragmentTop = new FragmentTop();
+    private FragmentMiddle fragmentMiddle = new FragmentMiddle();
+    private FragmentBottom fragmentBottom = new FragmentBottom();
+
+    public MainActivity() {
+        cacheService = CacheService.getInstance();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.default_menu, menu);
+        MenuCompat.setGroupDividerEnabled(menu, true);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.clear();
+
+        Config config = cacheService.loadConfig();
+        menu.add(R.id.units, 0, 0, "Unit: " + config.currentUnit);
+        menu.add(R.id.searching, 1, 0, "Search");
+        int i = 2;
+        for (String city : config.favouriteCities) {
+            menu.add(R.id.items, i, 0, city);
+            i++;
+        }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.authors) {
+        int groupId = item.getGroupId();
+        if (groupId == R.id.items) {
+            Config config = cacheService.loadConfig();
+            config.currentCity = Objects.requireNonNull(item.getTitle()).toString();
+            fragmentTop.update(config);
             return true;
-        } else if (itemId == R.id.exit) {
+        } else if ( groupId == R.id.searching){
+            return true;
+        } else if ( groupId == R.id.units){
+            Config config = cacheService.loadConfig();
+            config.currentUnit = config.nextUnit();
+            cacheService.saveConfig(config);
+            item.setTitle("Unit: " + config.currentUnit);
+            fragmentTop.update(config);
             return true;
         }
-        return super.onOptionsItemSelected(item);
+
+        return true;
     }
 
     @Override
@@ -48,9 +91,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        FragmentTop fragmentTop = new FragmentTop();
-        FragmentMiddle fragmentMiddle = new FragmentMiddle();
-        FragmentBottom fragmentBottom = new FragmentBottom();
+
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
