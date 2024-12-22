@@ -13,7 +13,8 @@ public class CacheService {
 
     private static final String name = "config.json";
 
-    private static CacheService instance = null;
+    private static CacheService instance = null;;
+    private static final Gson gson = new Gson();
 
     private CacheService() {}
 
@@ -29,8 +30,6 @@ public class CacheService {
     public void saveConfig(Config config){
         File cacheFile = new File(MyApp.getContext().getCacheDir(), name);
 
-        Gson gson = new Gson();
-
         String jsonData = gson.toJson(config);
 
         try (FileWriter writer = new FileWriter(cacheFile)) {
@@ -42,24 +41,21 @@ public class CacheService {
 
     public Config loadConfig(){
         File file = new File(MyApp.getContext().getCacheDir(), name);
-
-        if(file.exists()){
-            StringBuilder stringBuilder = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line = reader.readLine();
-                while (line != null) {
-                    stringBuilder.append(line).append('\n');
-                    line = reader.readLine();
-                }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-            String out = stringBuilder.toString();
-
-            Gson gson = new Gson();
-            return gson.fromJson(out, Config.class);
+        if(!file.exists()){
+            saveConfig(Config.getDefault());
         }
 
-        return null;
+        StringBuilder stringBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line = reader.readLine();
+            while (line != null) {
+                stringBuilder.append(line).append('\n');
+                line = reader.readLine();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        String out = stringBuilder.toString();
+        return gson.fromJson(out, Config.class);
     }
 }
