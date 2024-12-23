@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         if (groupId == R.id.items) {
             Config config = cacheService.loadConfig();
             config.currentCity = Objects.requireNonNull(item.getTitle()).toString();
-            fragmentTop.update(config);
+            updateFragments(config);
             return true;
         } else if ( groupId == R.id.searching){
             onButtonShowPopupWindowClick(new LinearLayout(this));
@@ -87,11 +87,15 @@ public class MainActivity extends AppCompatActivity {
             config.currentUnit = config.nextUnit();
             cacheService.saveConfig(config);
             item.setTitle("Unit: " + config.currentUnit);
-            fragmentTop.update(config);
+            updateFragments(config);
             return true;
         }
 
         return true;
+    }
+
+    private void updateFragments(Config config) {
+        fragmentTop.update(config);
     }
 
     public void onButtonShowPopupWindowClick(View view) {
@@ -109,8 +113,10 @@ public class MainActivity extends AppCompatActivity {
         EditText newCity = popupView.findViewById(R.id.editCity);
         if(newCity != null){
             newCity.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) ->{
-                int b= 4;
                 if (actionId == EditorInfo.IME_ACTION_DONE || event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
+                    Config config = cacheService.loadConfig();
+                    config.currentCity = Objects.requireNonNull(newCity.getText()).toString();
+                    updateFragments(config);
                     popupWindow.dismiss();
                     return true;
                 }

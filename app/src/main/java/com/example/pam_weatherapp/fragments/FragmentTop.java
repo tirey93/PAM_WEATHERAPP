@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -87,5 +88,16 @@ public class FragmentTop extends Fragment {
         }else {
             fav.setChecked(config.isFav());
         }
+
+        fav.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked)-> {
+            Config c = cacheService.loadConfig();
+            if(isChecked) {
+                c.favouriteCities.add(c.currentCity);
+            }
+            else {
+                c.favouriteCities.removeIf((x) -> x.equals(c.currentCity));
+            }
+            cacheService.saveConfig(c);
+        });
     }
 }
