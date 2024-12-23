@@ -3,9 +3,19 @@ package com.example.pam_weatherapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +34,7 @@ import com.example.pam_weatherapp.model.WeatherResponse;
 import com.example.pam_weatherapp.service.CacheService;
 import com.example.pam_weatherapp.service.WeatherService;
 
+import java.security.Key;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,10 +80,7 @@ public class MainActivity extends AppCompatActivity {
             fragmentTop.update(config);
             return true;
         } else if ( groupId == R.id.searching){
-
-
-
-
+            onButtonShowPopupWindowClick(new LinearLayout(this));
             return true;
         } else if ( groupId == R.id.units){
             Config config = cacheService.loadConfig();
@@ -84,6 +92,31 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    public void onButtonShowPopupWindowClick(View view) {
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_window, null);
+
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true;
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        EditText newCity = popupView.findViewById(R.id.editCity);
+        if(newCity != null){
+            newCity.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) ->{
+                int b= 4;
+                if (actionId == EditorInfo.IME_ACTION_DONE || event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
+                    popupWindow.dismiss();
+                    return true;
+                }
+                return  false;
+            });
+        }
     }
 
     @Override
