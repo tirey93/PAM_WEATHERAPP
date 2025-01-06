@@ -66,32 +66,39 @@ public class FragmentTop extends Fragment {
     }
 
     private void updateData() {
-        TextView resultTextView = view.findViewById(R.id.resultTextView);
         try {
+            WeatherResponse weatherCache = cacheService.loadWeather();
+            setControls(weatherCache);
+
             CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
                 .whenComplete((weatherResponse, throwable) -> {
-                    if (throwable != null) {
-                        getActivity().runOnUiThread(() ->{
-                            WeatherResponse weather = cacheService.loadWeather();
-                            if(weather != null){
-                                resultTextView.post(()-> resultTextView.setText("City:" + weather.name + " temp: " + weather.main.temp));
-                                final Toast toast = Toast.makeText(getActivity(), "Data loaded from cache", Toast.LENGTH_LONG);
-                                toast.show();
-                            }
-                            else {
-                                final Toast toast = Toast.makeText(getActivity(), "Data not available", Toast.LENGTH_LONG);
-                                toast.show();
-                            }
-
-                        });
+                    if (throwable != null && weatherCache == null) {
+                        showToast("Data not available", Toast.LENGTH_LONG);
                     } else if (weatherResponse != null) {
-                        resultTextView.post(()-> resultTextView.setText("City:" + weatherResponse.name + " temp: " + weatherResponse.main.temp));
+                        setControls(weatherResponse);
+                        showToast("Data load from web", Toast.LENGTH_SHORT);
+                    } else {
+                        showToast("Data loaded from cache", Toast.LENGTH_LONG);
                     }
                 });
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void setControls(WeatherResponse finalWeatherResponse){
+        TextView resultTextView = view.findViewById(R.id.resultTextView);
+        resultTextView.post(()-> resultTextView.setText("City:" + finalWeatherResponse.name + " temp: " + finalWeatherResponse.main.temp));
+
+    }
+
+    private void showToast(String text, int length) {
+        getActivity().runOnUiThread(() ->{
+            final Toast toast = Toast.makeText(getActivity(), text, length);
+            toast.show();
+        });
+
     }
 
     private void updateFav() {
