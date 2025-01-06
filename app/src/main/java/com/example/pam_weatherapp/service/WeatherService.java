@@ -39,7 +39,7 @@ public class WeatherService {
             conn = url.openConnection();
 
             try (Socket soc = new Socket()) {
-                soc.connect(new InetSocketAddress("www.openweathermap.org", 80), 100);
+                soc.connect(new InetSocketAddress("www.openweathermap.org", 80), 1000);
             }
 
             InputStream is = conn.getInputStream();
@@ -48,7 +48,9 @@ public class WeatherService {
             String result = s.hasNext() ? s.next() : "";
 
             Gson gson = new Gson();
-            return gson.fromJson(result, WeatherResponse.class);
+            WeatherResponse weather = gson.fromJson(result, WeatherResponse.class);
+            cacheService.saveWeather(weather);
+            return weather;
 
         } catch (Exception e) {
             throw new RuntimeException(e);

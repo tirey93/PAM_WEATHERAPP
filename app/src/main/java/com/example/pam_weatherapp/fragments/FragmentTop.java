@@ -72,8 +72,17 @@ public class FragmentTop extends Fragment {
                 .whenComplete((weatherResponse, throwable) -> {
                     if (throwable != null) {
                         getActivity().runOnUiThread(() ->{
-                            final Toast toast = Toast.makeText(getActivity(), "Data not loaded from Web", Toast.LENGTH_LONG);
-                            toast.show();
+                            WeatherResponse weather = cacheService.loadWeather();
+                            if(weather != null){
+                                resultTextView.post(()-> resultTextView.setText("City:" + weather.name + " temp: " + weather.main.temp));
+                                final Toast toast = Toast.makeText(getActivity(), "Data loaded from cache", Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                            else {
+                                final Toast toast = Toast.makeText(getActivity(), "Data not available", Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+
                         });
                     } else if (weatherResponse != null) {
                         resultTextView.post(()-> resultTextView.setText("City:" + weatherResponse.name + " temp: " + weatherResponse.main.temp));
