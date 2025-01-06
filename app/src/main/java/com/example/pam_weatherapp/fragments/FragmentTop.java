@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -67,10 +68,13 @@ public class FragmentTop extends Fragment {
     private void updateData() {
         TextView resultTextView = view.findViewById(R.id.resultTextView);
         try {
-            CompletableFuture.supplyAsync(() -> weatherService.getWeather(), Executors.newSingleThreadExecutor())
+            CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
                 .whenComplete((weatherResponse, throwable) -> {
                     if (throwable != null) {
-                        resultTextView.setText("Error fetching data: " + throwable.getMessage());
+                        getActivity().runOnUiThread(() ->{
+                            final Toast toast = Toast.makeText(getActivity(), "Data not loaded from Web", Toast.LENGTH_LONG);
+                            toast.show();
+                        });
                     } else if (weatherResponse != null) {
                         resultTextView.post(()-> resultTextView.setText("City:" + weatherResponse.name + " temp: " + weatherResponse.main.temp));
                     }
