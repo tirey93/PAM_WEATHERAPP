@@ -68,7 +68,8 @@ public class FragmentTop extends Fragment {
     private void updateData() {
         try {
             WeatherResponse weatherCache = cacheService.loadWeather();
-            setControls(weatherCache);
+            if (weatherCache != null)
+                setControls(weatherCache);
 
             CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
                 .whenComplete((weatherResponse, throwable) -> {
