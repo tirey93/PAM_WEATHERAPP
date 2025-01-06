@@ -60,9 +60,10 @@ public class MainActivity extends AppCompatActivity {
         menu.clear();
 
         Config config = cacheService.loadConfig();
-        menu.add(R.id.units, 0, 0, "Unit: " + config.currentUnit);
-        menu.add(R.id.searching, 1, 0, "Search");
-        int i = 2;
+        menu.add(R.id.refresh, 0, 0, "Refresh");
+        menu.add(R.id.units, 1, 0, "Unit: " + config.currentUnit);
+        menu.add(R.id.searching, 2, 0, "Search");
+        int i = 3;
         for (String city : config.favouriteCities) {
             menu.add(R.id.items, i, 0, city);
             i++;
@@ -72,9 +73,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
         int groupId = item.getGroupId();
-        if (groupId == R.id.items) {
+        if ( groupId == R.id.refresh) {
+            loadWeather();
+            return true;
+        } else if (groupId == R.id.items) {
             cacheService.wrapUpdate(config -> {
                 config.currentCity = Objects.requireNonNull(item.getTitle()).toString();
             });
@@ -144,6 +147,10 @@ public class MainActivity extends AppCompatActivity {
         ft.add(R.id.layoutBottom, fragmentBottom);
         ft.commit();
 
+        loadWeather();
+    }
+
+    private void loadWeather() {
         CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
             .whenComplete((weatherResponse, throwable) -> {
                 WeatherResponse weatherCache = cacheService.loadWeather();
