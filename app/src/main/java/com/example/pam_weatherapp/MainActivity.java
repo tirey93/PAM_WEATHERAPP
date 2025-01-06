@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,18 +26,25 @@ import com.example.pam_weatherapp.fragments.FragmentBottom;
 import com.example.pam_weatherapp.fragments.FragmentMiddle;
 import com.example.pam_weatherapp.fragments.FragmentTop;
 import com.example.pam_weatherapp.model.Config;
+import com.example.pam_weatherapp.model.ForecastResponse;
+import com.example.pam_weatherapp.model.WeatherResponse;
 import com.example.pam_weatherapp.service.CacheService;
+import com.example.pam_weatherapp.service.WeatherService;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
     private final CacheService cacheService;
     private final FragmentTop fragmentTop = new FragmentTop();
     private final FragmentMiddle fragmentMiddle = new FragmentMiddle();
     private final FragmentBottom fragmentBottom = new FragmentBottom();
+    private final WeatherService weatherService;
 
     public MainActivity() {
         cacheService = CacheService.getInstance();
+        weatherService = WeatherService.getInstance();
     }
 
     @Override
@@ -89,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateFragments() {
         fragmentTop.update();
+        fragmentMiddle.update();
     }
 
     public void onButtonShowPopupWindowClick(View view) {
@@ -128,13 +137,32 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-
-
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction ft = fragmentManager.beginTransaction();
         ft.add(R.id.layoutTop, fragmentTop);
         ft.add(R.id.layoutMiddle, fragmentMiddle);
         ft.add(R.id.layoutBottom, fragmentBottom);
         ft.commit();
+
+        CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
+            .whenComplete((weatherResponse, throwable) -> {
+                WeatherResponse weatherCache = cacheService.loadWeather();
+                if (throwable != null && weatherCache == null) {
+                    showToast("Data not available", Toast.LENGTH_LONG);
+                } else if (weatherResponse != null) {
+                    showToast("Data loaded from web", Toast.LENGTH_SHORT);
+                    fragmentTop.setControls(weatherResponse);
+                    fragmentMiddle.setControls(weatherResponse);
+                } else {
+                    showToast("Data loaded from cache", Toast.LENGTH_LONG);
+                }
+            });
+    }
+
+    private void showToast(String text, int length) {
+        runOnUiThread(() ->{
+            final Toast toast = Toast.makeText(getApplicationContext(), text, length);
+            toast.show();
+        });
     }
 }

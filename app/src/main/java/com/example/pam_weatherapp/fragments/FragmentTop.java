@@ -66,40 +66,15 @@ public class FragmentTop extends Fragment {
     }
 
     private void updateData() {
-        try {
-            WeatherResponse weatherCache = cacheService.loadWeather();
-            if (weatherCache != null)
-                setControls(weatherCache);
-
-            CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
-                .whenComplete((weatherResponse, throwable) -> {
-                    if (throwable != null && weatherCache == null) {
-                        showToast("Data not available", Toast.LENGTH_LONG);
-                    } else if (weatherResponse != null) {
-                        setControls(weatherResponse);
-                        showToast("Data load from web", Toast.LENGTH_SHORT);
-                    } else {
-                        showToast("Data loaded from cache", Toast.LENGTH_LONG);
-                    }
-                });
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        WeatherResponse weatherCache = cacheService.loadWeather();
+        if (weatherCache != null) {
+            setControls(weatherCache);
         }
     }
 
-    private void setControls(WeatherResponse finalWeatherResponse){
+    public void setControls(WeatherResponse finalWeatherResponse){
         TextView resultTextView = view.findViewById(R.id.resultTextView);
         resultTextView.post(()-> resultTextView.setText("City:" + finalWeatherResponse.name + " temp: " + finalWeatherResponse.main.temp));
-
-    }
-
-    private void showToast(String text, int length) {
-        getActivity().runOnUiThread(() ->{
-            final Toast toast = Toast.makeText(getActivity(), text, length);
-            toast.show();
-        });
-
     }
 
     private void updateFav() {
