@@ -26,15 +26,8 @@ public class WeatherService {
         return instance;
     }
 
-    public WeatherResponse getWeather(){return getWeather(null);}
-    public WeatherResponse getWeather(Config config) {
-        if(config == null){
-            config = cacheService.loadConfig();
-        }
-        else {
-            cacheService.saveConfig(config);
-        }
-
+    public WeatherResponse getWeather() {
+        Config config = cacheService.loadConfig();
         String urlString = "https://api.openweathermap.org/data/2.5/weather?appid=" + MyApp.appId +"&units=" + config.currentUnit +"&q=" + config.currentCity;
         try {
             URL url = new URL(urlString);

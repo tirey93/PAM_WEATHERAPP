@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.function.Consumer;
 
 public class CacheService {
 
@@ -27,16 +28,11 @@ public class CacheService {
         return instance;
     }
 
-    public void saveConfig(Config config){
-        File cacheFile = new File(MyApp.getContext().getCacheDir(), name);
+    public void wrapUpdate(Consumer<Config> consumer) {
+        Config config = loadConfig();
+        consumer.accept(config);
 
-        String jsonData = gson.toJson(config);
-
-        try (FileWriter writer = new FileWriter(cacheFile)) {
-            writer.write(jsonData);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        saveConfig(config);
     }
 
     public Config loadConfig(){
@@ -57,5 +53,17 @@ public class CacheService {
         }
         String out = stringBuilder.toString();
         return gson.fromJson(out, Config.class);
+    }
+
+    private void saveConfig(Config config){
+        File cacheFile = new File(MyApp.getContext().getCacheDir(), name);
+
+        String jsonData = gson.toJson(config);
+
+        try (FileWriter writer = new FileWriter(cacheFile)) {
+            writer.write(jsonData);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

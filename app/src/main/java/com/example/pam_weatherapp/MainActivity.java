@@ -1,6 +1,5 @@
 package com.example.pam_weatherapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.view.Gravity;
@@ -9,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -19,10 +17,7 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
 import androidx.core.view.MenuCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -30,11 +25,8 @@ import com.example.pam_weatherapp.fragments.FragmentBottom;
 import com.example.pam_weatherapp.fragments.FragmentMiddle;
 import com.example.pam_weatherapp.fragments.FragmentTop;
 import com.example.pam_weatherapp.model.Config;
-import com.example.pam_weatherapp.model.WeatherResponse;
 import com.example.pam_weatherapp.service.CacheService;
-import com.example.pam_weatherapp.service.WeatherService;
 
-import java.security.Key;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -75,27 +67,28 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
         int groupId = item.getGroupId();
         if (groupId == R.id.items) {
-            Config config = cacheService.loadConfig();
-            config.currentCity = Objects.requireNonNull(item.getTitle()).toString();
-            updateFragments(config);
+            cacheService.wrapUpdate(config -> {
+                config.currentCity = Objects.requireNonNull(item.getTitle()).toString();
+            });
+            updateFragments();
             return true;
         } else if ( groupId == R.id.searching){
             onButtonShowPopupWindowClick(new LinearLayout(this));
             return true;
         } else if ( groupId == R.id.units){
-            Config config = cacheService.loadConfig();
-            config.currentUnit = config.nextUnit();
-            cacheService.saveConfig(config);
-            item.setTitle("Unit: " + config.currentUnit);
-            updateFragments(config);
+            cacheService.wrapUpdate(config -> {
+                config.currentUnit = config.nextUnit();
+                item.setTitle("Unit: " + config.currentUnit);
+            });
+            updateFragments();
             return true;
         }
 
         return true;
     }
 
-    private void updateFragments(Config config) {
-        fragmentTop.update(config);
+    private void updateFragments() {
+        fragmentTop.update();
     }
 
     public void onButtonShowPopupWindowClick(View view) {
@@ -114,9 +107,10 @@ public class MainActivity extends AppCompatActivity {
         if(newCity != null){
             newCity.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) ->{
                 if (actionId == EditorInfo.IME_ACTION_DONE || event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
-                    Config config = cacheService.loadConfig();
-                    config.currentCity = Objects.requireNonNull(newCity.getText()).toString();
-                    updateFragments(config);
+                    cacheService.wrapUpdate(config -> {
+                        config.currentCity = Objects.requireNonNull(newCity.getText()).toString();
+                    });
+                    updateFragments();
                     popupWindow.dismiss();
                     return true;
                 }

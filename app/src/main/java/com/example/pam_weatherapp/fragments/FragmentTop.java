@@ -31,6 +31,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
@@ -58,16 +59,15 @@ public class FragmentTop extends Fragment {
         return view;
     }
 
-    public void update(){update(null);}
-    public void update(Config config) {
-        updateFav(config);
-        updateData(config);
+    public void update(){
+        updateFav();
+        updateData();
     }
 
-    private void updateData(Config config) {
+    private void updateData() {
         TextView resultTextView = view.findViewById(R.id.resultTextView);
         try {
-            CompletableFuture.supplyAsync(() -> weatherService.getWeather(config), Executors.newSingleThreadExecutor())
+            CompletableFuture.supplyAsync(() -> weatherService.getWeather(), Executors.newSingleThreadExecutor())
                 .whenComplete((weatherResponse, throwable) -> {
                     if (throwable != null) {
                         resultTextView.setText("Error fetching data: " + throwable.getMessage());
@@ -81,7 +81,8 @@ public class FragmentTop extends Fragment {
         }
     }
 
-    private void updateFav(Config config) {
+    private void updateFav() {
+        Config config = cacheService.loadConfig();
         MaterialSwitch fav = view.findViewById(R.id.fav);
         if(config == null){
             fav.setChecked(false);
@@ -90,14 +91,14 @@ public class FragmentTop extends Fragment {
         }
 
         fav.setOnCheckedChangeListener((CompoundButton buttonView, boolean isChecked)-> {
-            Config c = cacheService.loadConfig();
-            if(isChecked) {
-                c.favouriteCities.add(c.currentCity);
-            }
-            else {
-                c.favouriteCities.removeIf((x) -> x.equals(c.currentCity));
-            }
-            cacheService.saveConfig(c);
+            cacheService.wrapUpdate(c -> {
+                if(isChecked) {
+                    c.favouriteCities.add(c.currentCity);
+                }
+                else {
+                    c.favouriteCities.removeIf((x) -> x.equals(c.currentCity));
+                }
+            });
         });
     }
 }
