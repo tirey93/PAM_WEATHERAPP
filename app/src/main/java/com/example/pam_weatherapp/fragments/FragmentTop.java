@@ -1,40 +1,25 @@
 package com.example.pam_weatherapp.fragments;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.Switch;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.pam_weatherapp.MyApp;
 import com.example.pam_weatherapp.R;
 import com.example.pam_weatherapp.model.Config;
-import com.example.pam_weatherapp.model.ForecastResponse;
 import com.example.pam_weatherapp.model.WeatherResponse;
 import com.example.pam_weatherapp.service.CacheService;
 import com.example.pam_weatherapp.service.ForecastService;
 import com.example.pam_weatherapp.service.WeatherService;
 import com.google.android.material.materialswitch.MaterialSwitch;
-import com.google.gson.Gson;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
 
 public class FragmentTop extends Fragment {
@@ -56,17 +41,19 @@ public class FragmentTop extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_top, container, false);
 
-        update();
+        Config config = cacheService.loadConfig();
+
+        update(config);
         return view;
     }
 
-    public void update(){
-        updateFav();
-        updateData();
+    public void update(Config config){
+        updateFav(config);
+        updateData(config);
     }
 
-    private void updateData() {
-        WeatherResponse weatherCache = weatherService.getWeather();
+    private void updateData(Config config) {
+        WeatherResponse weatherCache = weatherService.getWeather(config);
         if (weatherCache != null) {
             setControls(weatherCache);
         }
@@ -74,11 +61,15 @@ public class FragmentTop extends Fragment {
 
     public void setControls(WeatherResponse finalWeatherResponse){
         TextView resultTextView = view.findViewById(R.id.resultTextView);
+        ImageView img = view.findViewById(R.id.imageView);
+
         resultTextView.post(()-> resultTextView.setText("City:" + finalWeatherResponse.name + " temp: " + finalWeatherResponse.main.temp));
+
+        Bitmap bitmap = weatherService.getBitmapWeatherIcon(finalWeatherResponse.weather[0].icon);
+        img.setImageBitmap(bitmap);
     }
 
-    private void updateFav() {
-        Config config = cacheService.loadConfig();
+    private void updateFav(Config config) {
         MaterialSwitch fav = view.findViewById(R.id.fav);
         if(config == null){
             fav.setChecked(false);

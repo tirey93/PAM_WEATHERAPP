@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
         } else if (groupId == R.id.items) {
             cacheService.wrapUpdate(config -> {
                 config.currentCity = Objects.requireNonNull(item.getTitle()).toString();
+                updateFragments(config);
             });
-            updateFragments();
             return true;
         } else if ( groupId == R.id.searching){
             onButtonShowPopupWindowClick(new LinearLayout(this));
@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
             cacheService.wrapUpdate(config -> {
                 config.currentUnit = config.nextUnit();
                 item.setTitle("Unit: " + config.currentUnit);
+                updateFragments(config);
             });
-            updateFragments();
             return true;
         }
 
@@ -103,10 +103,11 @@ public class MainActivity extends AppCompatActivity {
                 if (actionId == EditorInfo.IME_ACTION_DONE || event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
                     if(weatherService.isCityExist(String.valueOf(newCity.getText()))){
                         cacheService.wrapUpdate(config -> {
-                            WeatherResponse weatherResponse = weatherService.getWeather();
+                            config.currentCity = String.valueOf(newCity.getText());
+                            WeatherResponse weatherResponse = weatherService.getWeather(config);
                             config.currentCity = weatherResponse.name;
+                            updateFragments(config);
                         });
-                        updateFragments();
                     } else {
                         showToast("City was not found", Toast.LENGTH_LONG);
                     }
@@ -155,14 +156,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadWeather() {
-        CompletableFuture.supplyAsync(weatherService::getWeather, Executors.newSingleThreadExecutor())
+        Config config = cacheService.loadConfig();
+        CompletableFuture.supplyAsync(() -> weatherService.getWeather(config), Executors.newSingleThreadExecutor())
             .whenComplete((weatherResponse, throwable) -> {
                 WeatherResponse weatherCache = cacheService.loadWeather();
                 if (throwable != null && weatherCache == null) {
                     showToast("Data not available", Toast.LENGTH_LONG);
                 } else if (weatherResponse != null) {
                     showToast("Data loaded from web", Toast.LENGTH_SHORT);
-                    updateFragments();
+                    updateFragments(config);
                 } else {
                     showToast("Data loaded from cache", Toast.LENGTH_LONG);
                 }
@@ -175,8 +177,8 @@ public class MainActivity extends AppCompatActivity {
             toast.show();
         });
     }
-    private void updateFragments() {
-        fragmentTop.update();
-        fragmentMiddle.update();
+    private void updateFragments(Config config) {
+        fragmentTop.update(config);
+        fragmentMiddle.update(config);
     }
 }

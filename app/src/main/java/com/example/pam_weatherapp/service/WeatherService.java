@@ -1,5 +1,8 @@
 package com.example.pam_weatherapp.service;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import com.example.pam_weatherapp.MyApp;
 import com.example.pam_weatherapp.model.Config;
 import com.example.pam_weatherapp.model.WeatherResponse;
@@ -8,7 +11,6 @@ import com.google.gson.Gson;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
@@ -29,6 +31,20 @@ public class WeatherService {
             }
         }
         return instance;
+    }
+
+    public Bitmap getBitmapWeatherIcon(String icon) {
+        try {
+            URL url = new URL("https://openweathermap.org/img/wn/" + icon +"@4x.png");
+            URLConnection connection = url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            return BitmapFactory.decodeStream(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public boolean isCityExist(String city){
@@ -55,8 +71,7 @@ public class WeatherService {
         }
     }
 
-    public WeatherResponse getWeather() {
-        Config config = cacheService.loadConfig();
+    public WeatherResponse getWeather(Config config) {
         String urlString = "https://api.openweathermap.org/data/2.5/weather?appid=" + MyApp.appId +"&units=" + config.currentUnit +"&q=" + config.currentCity;
         try {
             URL url = new URL(urlString);

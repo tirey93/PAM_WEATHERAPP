@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.pam_weatherapp.R;
+import com.example.pam_weatherapp.model.Config;
 import com.example.pam_weatherapp.model.WeatherResponse;
 import com.example.pam_weatherapp.service.CacheService;
 import com.example.pam_weatherapp.service.WeatherService;
@@ -35,12 +36,12 @@ public class FragmentMiddle extends Fragment {
         return view;
     }
 
-    public void update(){
-        updateData();
+    public void update(Config config){
+        updateData(config);
     }
 
-    private void updateData() {
-        WeatherResponse weatherCache = weatherService.getWeather();
+    private void updateData(Config config) {
+        WeatherResponse weatherCache = weatherService.getWeather(config);
         if (weatherCache != null)
             setControls(weatherCache);
     }
