@@ -60,10 +60,16 @@ public class FragmentTop extends Fragment {
     }
 
     public void setControls(WeatherResponse finalWeatherResponse){
-        TextView resultTextView = view.findViewById(R.id.resultTextView);
-        ImageView img = view.findViewById(R.id.imageView);
+        TextView tvCityName = view.findViewById(R.id.cityName);
+        TextView tvGeneralTemp = view.findViewById(R.id.generalTemp);
+        TextView tvPressure = view.findViewById(R.id.pressure);
+        ImageView img = view.findViewById(R.id.weatherIcon);
 
-        resultTextView.post(()-> resultTextView.setText("City:" + finalWeatherResponse.name + " temp: " + finalWeatherResponse.main.temp));
+        tvCityName.post(()-> tvCityName.setText(finalWeatherResponse.name));
+        Config config = cacheService.loadConfig();
+        String unit =  config.currentUnit.equals("metric") ? "°C" : "°F";
+        tvGeneralTemp.post(()-> tvGeneralTemp.setText("Temp: " + finalWeatherResponse.main.temp + unit));
+        tvPressure.post(()-> tvPressure.setText("Pressure: " + finalWeatherResponse.main.pressure + "hPa"));
 
         Bitmap bitmap = weatherService.getBitmapWeatherIcon(finalWeatherResponse.weather[0].icon);
         img.setImageBitmap(bitmap);

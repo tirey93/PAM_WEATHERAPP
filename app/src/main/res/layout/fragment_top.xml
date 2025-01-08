@@ -6,22 +6,44 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/resultTextView"
-        android:layout_width="157dp"
-        android:layout_height="46dp"
+        android:id="@+id/cityName"
+        android:layout_width="154dp"
+        android:layout_height="61dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="60dp"
         android:text="No data"
+        android:textSize="20dp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
+    <TextView
+        android:id="@+id/generalTemp"
+        android:layout_width="140dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="172dp"
+        android:layout_marginTop="80dp"
+        android:text="No data"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/pressure"
+        android:layout_width="140dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="172dp"
+        android:layout_marginTop="116dp"
+        android:text="No data"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/weatherIcon"
         android:layout_width="88dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="196dp"
-        android:layout_marginTop="60dp"
+        android:layout_height="84dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="120dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_launcher_foreground" />
