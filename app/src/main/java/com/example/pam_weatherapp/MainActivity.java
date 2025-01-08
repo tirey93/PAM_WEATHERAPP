@@ -42,19 +42,6 @@ public class MainActivity extends AppCompatActivity {
     private final FragmentBottom fragmentBottom = new FragmentBottom();
     private final WeatherService weatherService;
 
-    public MainActivity() {
-        cacheService = CacheService.getInstance();
-        weatherService = WeatherService.getInstance();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.default_menu, menu);
-        MenuCompat.setGroupDividerEnabled(menu, true);
-        return true;
-    }
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
@@ -98,11 +85,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void updateFragments() {
-        fragmentTop.update();
-        fragmentMiddle.update();
-    }
-
     public void onButtonShowPopupWindowClick(View view) {
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -121,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
                 if (actionId == EditorInfo.IME_ACTION_DONE || event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
                     if(weatherService.isCityExist(String.valueOf(newCity.getText()))){
                         cacheService.wrapUpdate(config -> {
-                            config.currentCity = Objects.requireNonNull(newCity.getText()).toString();
+                            WeatherResponse weatherResponse = weatherService.getWeather();
+                            config.currentCity = weatherResponse.name;
                         });
                         updateFragments();
                     } else {
@@ -133,6 +116,23 @@ public class MainActivity extends AppCompatActivity {
                 return  false;
             });
         }
+    }
+
+
+    /*---------------------------------------*/
+    /*------------ Main Activity -----------*/
+    /*---------------------------------------*/
+    public MainActivity() {
+        cacheService = CacheService.getInstance();
+        weatherService = WeatherService.getInstance();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.default_menu, menu);
+        MenuCompat.setGroupDividerEnabled(menu, true);
+        return true;
     }
 
     @Override
@@ -162,8 +162,7 @@ public class MainActivity extends AppCompatActivity {
                     showToast("Data not available", Toast.LENGTH_LONG);
                 } else if (weatherResponse != null) {
                     showToast("Data loaded from web", Toast.LENGTH_SHORT);
-                    fragmentTop.setControls(weatherResponse);
-                    fragmentMiddle.setControls(weatherResponse);
+                    updateFragments();
                 } else {
                     showToast("Data loaded from cache", Toast.LENGTH_LONG);
                 }
@@ -175,5 +174,9 @@ public class MainActivity extends AppCompatActivity {
             final Toast toast = Toast.makeText(getApplicationContext(), text, length);
             toast.show();
         });
+    }
+    private void updateFragments() {
+        fragmentTop.update();
+        fragmentMiddle.update();
     }
 }
