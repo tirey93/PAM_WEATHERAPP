@@ -66,7 +66,7 @@ public class FragmentTop extends Fragment {
     }
 
     private void updateData() {
-        WeatherResponse weatherCache = cacheService.loadWeather();
+        WeatherResponse weatherCache = weatherService.getWeather();
         if (weatherCache != null) {
             setControls(weatherCache);
         }

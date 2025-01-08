@@ -119,10 +119,14 @@ public class MainActivity extends AppCompatActivity {
         if(newCity != null){
             newCity.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) ->{
                 if (actionId == EditorInfo.IME_ACTION_DONE || event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
-                    cacheService.wrapUpdate(config -> {
-                        config.currentCity = Objects.requireNonNull(newCity.getText()).toString();
-                    });
-                    updateFragments();
+                    if(weatherService.isCityExist(String.valueOf(newCity.getText()))){
+                        cacheService.wrapUpdate(config -> {
+                            config.currentCity = Objects.requireNonNull(newCity.getText()).toString();
+                        });
+                        updateFragments();
+                    } else {
+                        showToast("City was not found", Toast.LENGTH_LONG);
+                    }
                     popupWindow.dismiss();
                     return true;
                 }

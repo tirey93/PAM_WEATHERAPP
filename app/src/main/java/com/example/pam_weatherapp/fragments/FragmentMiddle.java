@@ -13,17 +13,18 @@ import androidx.fragment.app.Fragment;
 import com.example.pam_weatherapp.R;
 import com.example.pam_weatherapp.model.WeatherResponse;
 import com.example.pam_weatherapp.service.CacheService;
+import com.example.pam_weatherapp.service.WeatherService;
 
 
 public class FragmentMiddle extends Fragment {
 
-    private final CacheService cacheService;
+    private final WeatherService weatherService;
 
     private View view = null;
 
 
     public FragmentMiddle() {
-        cacheService = CacheService.getInstance();
+        weatherService = WeatherService.getInstance();
     }
 
     @Nullable
@@ -39,7 +40,7 @@ public class FragmentMiddle extends Fragment {
     }
 
     private void updateData() {
-        WeatherResponse weatherCache = cacheService.loadWeather();
+        WeatherResponse weatherCache = weatherService.getWeather();
         if (weatherCache != null)
             setControls(weatherCache);
     }

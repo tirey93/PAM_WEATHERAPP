@@ -5,6 +5,7 @@ import com.example.pam_weatherapp.model.Config;
 import com.example.pam_weatherapp.model.WeatherResponse;
 import com.google.gson.Gson;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
@@ -28,6 +29,30 @@ public class WeatherService {
             }
         }
         return instance;
+    }
+
+    public boolean isCityExist(String city){
+        String urlString = "https://api.openweathermap.org/data/2.5/weather?appid=" + MyApp.appId +"&q=" + city;
+        try {
+            URL url = new URL(urlString);
+            URLConnection conn = null;
+            conn = url.openConnection();
+
+            InputStream is = conn.getInputStream();
+
+            Scanner s = new Scanner(is).useDelimiter("\\A");
+            String result = s.hasNext() ? s.next() : "";
+
+            Gson gson = new Gson();
+            WeatherResponse weather = gson.fromJson(result, WeatherResponse.class);
+            cacheService.saveWeather(weather);
+            return weather.cod == 200;
+
+        } catch (FileNotFoundException e) {
+            return false;
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public WeatherResponse getWeather() {
