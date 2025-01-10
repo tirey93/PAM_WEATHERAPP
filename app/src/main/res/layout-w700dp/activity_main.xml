@@ -16,11 +16,10 @@
 
         <FrameLayout
             android:id="@+id/layoutTop"
-            android:layout_width="match_parent"
+            android:layout_width="635dp"
             android:layout_height="match_parent"
-            android:background="@color/celeste"
-            android:layout_weight="2">
-        </FrameLayout>
+            android:layout_weight="2"
+            android:background="@color/celeste"></FrameLayout>
 
         <FrameLayout
             android:id="@+id/layoutMiddle"
