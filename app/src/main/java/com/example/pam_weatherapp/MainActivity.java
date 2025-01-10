@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 if (throwable != null && weatherCache == null) {
                     showToast("Data not available", Toast.LENGTH_LONG);
                 } else if (weatherResponse != null) {
-                    showToast("Data loaded from web", Toast.LENGTH_SHORT);
+//                    showToast("Data loaded from web", Toast.LENGTH_SHORT);
                     updateFragments(config);
                 } else {
                     showToast("Data loaded from cache", Toast.LENGTH_LONG);
