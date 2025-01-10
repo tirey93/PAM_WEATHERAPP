@@ -18,21 +18,21 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/pressure1"
+        android:id="@+id/generalTemp1"
         android:layout_width="140dp"
         android:layout_height="36dp"
-        android:layout_marginStart="116dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="68dp"
         android:text="No data"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/generalTemp1"
+        android:id="@+id/pressure1"
         android:layout_width="140dp"
         android:layout_height="36dp"
-        android:layout_marginStart="116dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginStart="124dp"
+        android:layout_marginTop="104dp"
         android:text="No data"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -84,7 +84,7 @@
         android:layout_width="140dp"
         android:layout_height="36dp"
         android:layout_marginStart="368dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="68dp"
         android:text="No data"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -94,7 +94,7 @@
         android:layout_width="140dp"
         android:layout_height="36dp"
         android:layout_marginStart="368dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="104dp"
         android:text="No data"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -134,7 +134,7 @@
         android:layout_width="140dp"
         android:layout_height="36dp"
         android:layout_marginStart="604dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="76dp"
         android:text="No data"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -144,7 +144,7 @@
         android:layout_width="140dp"
         android:layout_height="36dp"
         android:layout_marginStart="604dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="112dp"
         android:text="No data"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

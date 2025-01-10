@@ -68,7 +68,7 @@ public class FragmentTop extends Fragment {
         TextView tvPressure = view.findViewById(R.id.pressure);
         ImageView img = view.findViewById(R.id.weatherIcon);
 
-        tvCityName.post(()-> tvCityName.setText(finalWeatherResponse.name));
+        tvCityName.setText(finalWeatherResponse.name);
         Config config = cacheService.loadConfig();
         String unit =  config.currentUnit.equals("metric") ? "°C" : "°F";
         tvGeneralTemp.post(()-> tvGeneralTemp.setText("Temp: " + finalWeatherResponse.main.temp + unit));

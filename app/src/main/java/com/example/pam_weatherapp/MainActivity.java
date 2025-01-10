@@ -199,5 +199,6 @@ public class MainActivity extends AppCompatActivity {
     private void updateFragments(Config config) {
         fragmentTop.update(config);
         fragmentMiddle.update(config);
+        fragmentBottom.update(config);
     }
 }
