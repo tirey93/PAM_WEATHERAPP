@@ -29,6 +29,7 @@ import com.example.pam_weatherapp.model.Config;
 import com.example.pam_weatherapp.model.ForecastResponse;
 import com.example.pam_weatherapp.model.WeatherResponse;
 import com.example.pam_weatherapp.service.CacheService;
+import com.example.pam_weatherapp.service.ForecastService;
 import com.example.pam_weatherapp.service.WeatherService;
 
 import java.util.Objects;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private final FragmentMiddle fragmentMiddle = new FragmentMiddle();
     private final FragmentBottom fragmentBottom = new FragmentBottom();
     private final WeatherService weatherService;
+    private final ForecastService forecastService;
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -126,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
     public MainActivity() {
         cacheService = CacheService.getInstance();
         weatherService = WeatherService.getInstance();
+        forecastService = ForecastService.getInstance();
     }
 
     @Override
@@ -153,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
         ft.commit();
 
         loadWeather();
+        loadForecast();
     }
 
     private void loadWeather() {
@@ -167,6 +171,21 @@ public class MainActivity extends AppCompatActivity {
                     updateFragments(config);
                 } else {
                     showToast("Data loaded from cache", Toast.LENGTH_LONG);
+                }
+            });
+    }
+    private void loadForecast() {
+        Config config = cacheService.loadConfig();
+        CompletableFuture.supplyAsync(() -> forecastService.getForecast(config), Executors.newSingleThreadExecutor())
+            .whenComplete((forecastResponse, throwable) -> {
+                ForecastResponse forecastCache = cacheService.loadForecast();
+                if (throwable != null && forecastCache == null) {
+//                    showToast("Data not available", Toast.LENGTH_LONG);
+                } else if (forecastResponse != null) {
+//                    showToast("Data loaded from web", Toast.LENGTH_SHORT);
+                    fragmentBottom.update(config);
+                } else {
+//                    showToast("Data loaded from cache", Toast.LENGTH_LONG);
                 }
             });
     }

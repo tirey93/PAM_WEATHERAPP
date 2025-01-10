@@ -45,7 +45,12 @@ public class FragmentMiddle extends Fragment {
     }
 
     private void updateData(Config config) {
-        WeatherResponse weatherCache = weatherService.getWeather(config);
+        WeatherResponse weatherCache = null;
+        try {
+            weatherCache = weatherService.getWeather(config);
+        } catch (Exception e) {
+            weatherCache = cacheService.loadWeather();
+        }
         if (weatherCache != null)
             setControls(weatherCache);
     }

@@ -2,6 +2,7 @@ package com.example.pam_weatherapp.service;
 
 import com.example.pam_weatherapp.MyApp;
 import com.example.pam_weatherapp.model.Config;
+import com.example.pam_weatherapp.model.ForecastResponse;
 import com.example.pam_weatherapp.model.WeatherResponse;
 import com.google.gson.Gson;
 
@@ -15,6 +16,7 @@ public class CacheService {
 
     private static final String configName = "config.json";
     private static final String weatherName = "weather.json";
+    private static final String forecastName = "forecast.json";
 
     private static CacheService instance = null;;
     private static final Gson gson = new Gson();
@@ -87,6 +89,38 @@ public class CacheService {
         }
         String out = stringBuilder.toString();
         return gson.fromJson(out, WeatherResponse.class);
+    }
+
+    public void saveForecast(ForecastResponse forecastResponse){
+        File cacheFile = new File(MyApp.getContext().getCacheDir(), forecastName);
+
+        String jsonData = gson.toJson(forecastResponse);
+
+        try (FileWriter writer = new FileWriter(cacheFile)) {
+            writer.write(jsonData);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ForecastResponse loadForecast(){
+        File file = new File(MyApp.getContext().getCacheDir(), forecastName);
+        if(!file.exists()){
+            return null;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line = reader.readLine();
+            while (line != null) {
+                stringBuilder.append(line).append('\n');
+                line = reader.readLine();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        String out = stringBuilder.toString();
+        return gson.fromJson(out, ForecastResponse.class);
     }
 
     private void saveConfig(Config config){

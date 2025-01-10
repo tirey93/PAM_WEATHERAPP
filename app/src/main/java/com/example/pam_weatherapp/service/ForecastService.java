@@ -27,8 +27,7 @@ public class ForecastService {
         return instance;
     }
 
-    public ForecastResponse getForecast() {
-        Config config = cacheService.loadConfig();
+    public ForecastResponse getForecast(Config config) {
         String urlString = "https://api.openweathermap.org/data/2.5/forecast?appid=" + MyApp.appId +"&units=" + config.currentUnit +"&q=" + config.currentCity;;
         try {
             URL url = new URL(urlString);
@@ -40,7 +39,9 @@ public class ForecastService {
             String result = s.hasNext() ? s.next() : "";
 
             Gson gson = new Gson();
-            return gson.fromJson(result, ForecastResponse.class);
+            ForecastResponse response = gson.fromJson(result, ForecastResponse.class);
+            cacheService.saveForecast(response);
+            return response;
 
         } catch (Exception e) {
             throw new RuntimeException(e);

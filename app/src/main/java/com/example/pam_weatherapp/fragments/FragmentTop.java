@@ -25,14 +25,12 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 public class FragmentTop extends Fragment {
 
     private final WeatherService weatherService;
-    private final ForecastService forecastService;
     private final CacheService cacheService;
 
     private View view = null;
 
     public FragmentTop() {
         weatherService = WeatherService.getInstance();
-        forecastService = ForecastService.getInstance();
         cacheService = CacheService.getInstance();
     }
 
@@ -53,7 +51,12 @@ public class FragmentTop extends Fragment {
     }
 
     private void updateData(Config config) {
-        WeatherResponse weatherCache = weatherService.getWeather(config);
+        WeatherResponse weatherCache = null;
+        try {
+            weatherCache = weatherService.getWeather(config);
+        } catch (Exception e) {
+            weatherCache = cacheService.loadWeather();
+        }
         if (weatherCache != null) {
             setControls(weatherCache);
         }
