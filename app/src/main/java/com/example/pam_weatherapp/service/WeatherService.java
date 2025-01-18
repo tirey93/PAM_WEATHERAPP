@@ -2,8 +2,10 @@ package com.example.pam_weatherapp.service;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 
 import com.example.pam_weatherapp.MyApp;
+import com.example.pam_weatherapp.model.CitiesResponse;
 import com.example.pam_weatherapp.model.Config;
 import com.example.pam_weatherapp.model.WeatherResponse;
 import com.google.gson.Gson;
@@ -15,6 +17,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class WeatherService {
@@ -44,6 +48,31 @@ public class WeatherService {
         } catch (IOException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public List<CitiesResponse> getAvailableCities(String city){
+        String urlString = "https://api.openweathermap.org/geo/1.0/direct?q=" + city + "&limit=10&appid=" + MyApp.appId;
+        try {
+            URL url = new URL(urlString);
+            URLConnection conn = null;
+            conn = url.openConnection();
+
+            InputStream is = conn.getInputStream();
+
+            Scanner s = new Scanner(is).useDelimiter("\\A");
+            String result = s.hasNext() ? s.next() : "";
+
+            Gson gson = new Gson();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                return Arrays.stream(gson.fromJson(result, CitiesResponse[].class)).toList();
+            }
+            return  null;
+
+        } catch (FileNotFoundException e) {
+            return null;
+        }catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

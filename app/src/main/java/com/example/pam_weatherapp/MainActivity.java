@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -25,6 +26,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.pam_weatherapp.fragments.FragmentBottom;
 import com.example.pam_weatherapp.fragments.FragmentMiddle;
 import com.example.pam_weatherapp.fragments.FragmentTop;
+import com.example.pam_weatherapp.model.CitiesResponse;
 import com.example.pam_weatherapp.model.Config;
 import com.example.pam_weatherapp.model.ForecastResponse;
 import com.example.pam_weatherapp.model.WeatherResponse;
@@ -32,6 +34,8 @@ import com.example.pam_weatherapp.service.CacheService;
 import com.example.pam_weatherapp.service.ForecastService;
 import com.example.pam_weatherapp.service.WeatherService;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     private final WeatherService weatherService;
     private final ForecastService forecastService;
 
+
+    private boolean isEnter = false;
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
@@ -73,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
             });
             return true;
         } else if ( groupId == R.id.searching){
+            isEnter = false;
             onButtonShowPopupWindowClick(new LinearLayout(this));
             return true;
         } else if ( groupId == R.id.units){
@@ -99,21 +106,46 @@ public class MainActivity extends AppCompatActivity {
 
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
+
+        LinearLayout layout = popupView.findViewById(R.id.chosenCities);
+
+
         EditText newCity = popupView.findViewById(R.id.editCity);
         if(newCity != null){
             newCity.setOnEditorActionListener((TextView v, int actionId, KeyEvent event) ->{
                 if (actionId == EditorInfo.IME_ACTION_DONE || event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
                     if(weatherService.isCityExist(String.valueOf(newCity.getText()))){
-                        cacheService.wrapUpdate(config -> {
-                            config.currentCity = String.valueOf(newCity.getText());
-                            WeatherResponse weatherResponse = weatherService.getWeather(config);
-                            config.currentCity = weatherResponse.name;
-                            updateFragments(config);
-                        });
+//                        cacheService.wrapUpdate(config -> {
+//                            config.currentCity = String.valueOf(newCity.getText());
+//                            WeatherResponse weatherResponse = weatherService.getWeather(config);
+//                            config.currentCity = weatherResponse.name;
+//                            updateFragments(config);
+//
+//                        });
+                        List<CitiesResponse> list = weatherService.getAvailableCities(String.valueOf(newCity.getText()));
+                        if(!isEnter){
+                            for (CitiesResponse city : list){
+                                Button btn = new Button(this);
+                                btn.setText(city.name + "," + city.country);
+                                btn.setTag(city.name + "," + city.country);
+                                btn.setOnClickListener((x) -> {
+                                        Object tag = x.getTag();
+                                        cacheService.wrapUpdate(config -> {
+                                            config.currentCity = tag.toString();
+                                            WeatherResponse weatherResponse = weatherService.getWeather(config);
+//                                            config.currentCity = weatherResponse.name;
+                                            updateFragments(config);
+                                            popupWindow.dismiss();
+                                    });
+                                });
+                                layout.addView(btn);
+                            }
+                            isEnter = true;
+                        }
                     } else {
                         showToast("City was not found", Toast.LENGTH_LONG);
                     }
-                    popupWindow.dismiss();
+//                    popupWindow.dismiss();
                     return true;
                 }
                 return  false;
@@ -157,6 +189,11 @@ public class MainActivity extends AppCompatActivity {
 
         loadWeather();
         loadForecast();
+
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_window, null);
+        LinearLayout layout = popupView.findViewById(R.id.chosenCities);
     }
 
     private void loadWeather() {
