@@ -60,11 +60,10 @@ public class FragmentBottom extends Fragment {
             forecastCache = cacheService.loadForecast();
         }
         if (forecastCache != null)
-            setControls(forecastCache);
+            setControls(forecastCache, config);
     }
 
-    public void setControls(ForecastResponse forecastResponse){
-        Config config = cacheService.loadConfig();
+    public void setControls(ForecastResponse forecastResponse, Config config){
         String unit =  config.currentUnit.equals("metric") ? "°C" : "°F";
         TextView tvGeneralTemp1 = view.findViewById(R.id.generalTemp1);
         TextView tvDate1 = view.findViewById(R.id.date1);

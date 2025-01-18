@@ -58,18 +58,17 @@ public class FragmentTop extends Fragment {
             weatherCache = cacheService.loadWeather();
         }
         if (weatherCache != null) {
-            setControls(weatherCache);
+            setControls(weatherCache, config);
         }
     }
 
-    public void setControls(WeatherResponse finalWeatherResponse){
+    public void setControls(WeatherResponse finalWeatherResponse, Config config){
         TextView tvCityName = view.findViewById(R.id.cityName);
         TextView tvGeneralTemp = view.findViewById(R.id.generalTemp);
         TextView tvPressure = view.findViewById(R.id.pressure);
         ImageView img = view.findViewById(R.id.weatherIcon);
 
         tvCityName.setText(finalWeatherResponse.name);
-        Config config = cacheService.loadConfig();
         String unit =  config.currentUnit.equals("metric") ? "°C" : "°F";
         tvGeneralTemp.post(()-> tvGeneralTemp.setText("Temp: " + finalWeatherResponse.main.temp + unit));
         tvPressure.post(()-> tvPressure.setText("Pressure: " + finalWeatherResponse.main.pressure + "hPa"));
